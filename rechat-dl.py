@@ -37,7 +37,7 @@ vod_info['start_timestamp'] = start_timestamp
 messages.append(vod_info)   # we store the vod metadata in the first element of the message array
 
 for chat_timestamp in range(start_timestamp, last_timestamp + 1, 30):
-    print("\rchunk " + str(int((chat_timestamp - start_timestamp) / 30)) + " / " + str(int((last_timestamp - start_timestamp) / 30)), end="")
+    print("\rdownloading chunk " + str(int((chat_timestamp - start_timestamp) / 30)) + " / " + str(int((last_timestamp - start_timestamp) / 30)), end="")
     
     chat_json = requests.get("http://rechat.twitch.tv/rechat-messages?start=" + str(chat_timestamp) + "&video_id=v" + sys.argv[1]).json()
     if "errors" in chat_json or not "data" in chat_json:
