@@ -5,7 +5,7 @@ rechat-dl is a simple command-line tool to download the Chat Replay messages and
 2. Install the `requests` library, if not yet installed: `pip install requests`
 
 ## Notes
-rechat-dl requires version 3 of the Python interpreter. Its only dependency is [requests](https://pypi.python.org/pypi/requests).
+rechat-dl requires version 2.7+ of the Python interpreter. Its only dependency is [requests](https://pypi.python.org/pypi/requests).
 
 # Usage
     rechat-dl.py VOD-ID [FILE]

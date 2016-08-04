@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import requests
 import sys
 import calendar
@@ -29,7 +31,7 @@ if "error" in vod_info:
 
 start_timestamp = calendar.timegm(time.strptime(vod_info["recorded_at"], "%Y-%m-%dT%H:%M:%SZ"))
 video_len = int(vod_info["length"])
-last_timestamp = start_timestamp + math.ceil(video_len / 30.0) * 30
+last_timestamp = start_timestamp + int(math.ceil(video_len / 30.0) * 30)
 
 vod_info['start_timestamp'] = start_timestamp
 messages.append(vod_info)   # we store the vod metadata in the first element of the message array
