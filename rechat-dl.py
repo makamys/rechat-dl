@@ -6,6 +6,7 @@ import calendar
 import time
 import math
 import json
+import os.path
 
 CHUNK_ATTEMPTS = 6
 CHUNK_ATTEMPT_SLEEP = 10
@@ -19,10 +20,17 @@ if len(sys.argv) < 2 or len(sys.argv) > 3:
     print("    FILE (optional): the file the chat messages will be saved into.")
     print("    if not set, it's rechat-{VOD-ID}.json")
     sys.exit(0)
+
+cid = None
+with open(os.path.join(os.path.dirname(__file__), 'client-id.txt')) as cidf:
+    cid = cidf.read()
+    
+    if cid.startswith("("):
+        sys.exit("The Client-ID needs to be set! Edit the 'client-id.txt' file in this folder to set it.")
     
 messages = []
 
-vod_info = requests.get("https://api.twitch.tv/kraken/videos/v" + sys.argv[1]).json()
+vod_info = requests.get("https://api.twitch.tv/kraken/videos/v" + sys.argv[1], headers={"Client-ID": cid}).json()
 
 file_name = "rechat-" + sys.argv[1] + ".json"
 if len(sys.argv) == 3:
@@ -48,7 +56,7 @@ for chat_timestamp in range(start_timestamp, last_timestamp + 1, 30):
     
     for i in range(0, CHUNK_ATTEMPTS):
         try:
-            chat_json = requests.get("http://rechat.twitch.tv/rechat-messages?start=" + str(chat_timestamp) + "&video_id=v" + sys.argv[1]).json()
+            chat_json = requests.get("http://rechat.twitch.tv/rechat-messages?start=" + str(chat_timestamp) + "&video_id=v" + sys.argv[1], headers={"Client-ID": cid}).json()
         except requests.exceptions.ConnectionError as e:
             print("\nerror while downloading chunk #" + str(chunk_number) + ": " + str(e))
             
