@@ -55,27 +55,30 @@ for chat_timestamp in range(start_timestamp, last_timestamp + 1, 30):
     chat_json = None
     
     for i in range(0, CHUNK_ATTEMPTS):
+        error = None
         try:
             chat_json = requests.get("http://rechat.twitch.tv/rechat-messages?start=" + str(chat_timestamp) + "&video_id=v" + sys.argv[1], headers={"Client-ID": cid}).json()
         except requests.exceptions.ConnectionError as e:
-            print("\nerror while downloading chunk #" + str(chunk_number) + ": " + str(e))
+            error = str(e)
+        else:
+            if "errors" in chat_json or not "data" in chat_json:
+                error = "error received in chat message response: " + str(chat_json)
+        
+        if error == None:
+            messages += chat_json["data"]
+            break
+        else:
+            print("\nerror while downloading chunk #" + str(chunk_number) + ": " + error)
             
             if i < CHUNK_ATTEMPTS - 1:
-                    print("retrying in " + str(CHUNK_ATTEMPT_SLEEP) + " seconds", end="")
-            print(" (attempt " + str(i + 1) + "/" + str(CHUNK_ATTEMPTS) + ")")
+                    print("retrying in " + str(CHUNK_ATTEMPT_SLEEP) + " seconds ", end="")
+            print("(attempt " + str(i + 1) + "/" + str(CHUNK_ATTEMPTS) + ")")
             
             if i < CHUNK_ATTEMPTS - 1:
                 time.sleep(CHUNK_ATTEMPT_SLEEP)
-        else:
-            break
     
-    if chat_json == None:
+    if error != None:
         sys.exit("max retries exceeded.")
-    
-    if "errors" in chat_json or not "data" in chat_json:
-        sys.exit("got an error in chat message response: " + str(chat_json))
-    
-    messages += chat_json["data"]
 
 print()
 print("saving to " + file_name)
