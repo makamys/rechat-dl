@@ -23,7 +23,7 @@ if len(sys.argv) < 2 or len(sys.argv) > 3:
 
 cid = None
 with open(os.path.join(os.path.dirname(__file__), 'client-id.txt')) as cidf:
-    cid = cidf.read()
+    cid = cidf.read().strip()
     
     if cid.startswith("("):
         sys.exit("The Client-ID needs to be set! Edit the 'client-id.txt' file in this folder to set it.")
