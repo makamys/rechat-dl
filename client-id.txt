@@ -1,1 +1,0 @@
-(Replace this text with your Client-ID to get the script working. See https://blog.twitch.tv/client-id-required-for-kraken-api-calls-afbb8e95f843 for more info.)
