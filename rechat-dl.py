@@ -32,36 +32,28 @@ if len(sys.argv) == 3:
 if "error" in vod_info:
     sys.exit("got an error in vod info response: " + str(vod_info))
 
-start_timestamp = calendar.timegm(time.strptime(vod_info["recorded_at"], "%Y-%m-%dT%H:%M:%SZ"))
-video_len = int(vod_info["length"])
-last_timestamp = start_timestamp + int(math.ceil(video_len / 30.0) * 30)
-
-vod_info['start_timestamp'] = start_timestamp
 messages.append(vod_info)   # we store the vod metadata in the first element of the message array
 
-for chat_timestamp in range(start_timestamp, last_timestamp + 1, 30):
-    chunk_number = int((chat_timestamp - start_timestamp) / 30) + 1
-    chunks = int((last_timestamp - start_timestamp) / 30) + 1
-    
-    print("\rdownloading chunk " + str(chunk_number) + " / " + str(chunks), end="")
-    
-    chat_json = None
-    
+response = None
+
+print("downloading chat messages for vod " + sys.argv[1] + "...")
+while response == None or '_next' in response:
+    query = ('cursor=' + response['_next']) if response != None and '_next' in response else 'content_offset_seconds=0'
     for i in range(0, CHUNK_ATTEMPTS):
         error = None
         try:
-            chat_json = requests.get("http://rechat.twitch.tv/rechat-messages?start=" + str(chat_timestamp) + "&video_id=v" + sys.argv[1], headers={"Client-ID": cid}).json()
+            response = requests.get("https://api.twitch.tv/v5/videos/" + sys.argv[1] + "/comments?" + query, headers={"Client-ID": cid}).json()
         except requests.exceptions.ConnectionError as e:
             error = str(e)
         else:
-            if "errors" in chat_json or not "data" in chat_json:
-                error = "error received in chat message response: " + str(chat_json)
+            if "errors" in response or not "comments" in response:
+                error = "error received in chat message response: " + str(response)
         
         if error == None:
-            messages += chat_json["data"]
+            messages += response["comments"]
             break
         else:
-            print("\nerror while downloading chunk #" + str(chunk_number) + ": " + error)
+            print("\nerror while downloading chunk: " + error)
             
             if i < CHUNK_ATTEMPTS - 1:
                     print("retrying in " + str(CHUNK_ATTEMPT_SLEEP) + " seconds ", end="")
