@@ -20,5 +20,5 @@ The outputted .json file contains a json array, the first element of which is th
 
 This tool only downloads the chat messages, but doesn't offer a way to view them in real-time alongside a VOD.
 
----
-This README file was loosely inspired by the [bandcamp-dl](https://github.com/iheanyi/bandcamp-dl/blob/master/README.md) readme, which was inspired by the [youtube-dl](https://github.com/rg3/youtube-dl/blob/master/README.md) readme. So likewise, I release this readme into the public domain. I mean, I guess??
+# License
+This project is released under the [Unlicense](UNLICENSE).
